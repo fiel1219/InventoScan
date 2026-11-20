@@ -1,9 +1,8 @@
--- Run the ENTIRE script in Supabase SQL Editor after user_accounts is set up.
+-- Run the ENTIRE script in Supabase SQL Editor after the database migrations.
 -- Creates confirmed Auth logins AND active application accounts.
--- The Admin application role is System Admin; no laboratory assignment is needed
--- to manage users and laboratories.
+-- The two laboratory demos are assigned only to the existing Science Laboratory.
 -- Demo credentials are intentionally public in the app. Use a demo database.
--- Rerunning resets only these demo passwords; other users are untouched.
+-- Rerunning restores the demo accounts' passwords, roles, and assignments.
 begin;
 create schema if not exists extensions;
 create extension if not exists pgcrypto with schema extensions;
@@ -13,12 +12,22 @@ do $demo$
 declare
   account record;
   account_id uuid;
+  profile_id uuid;
+  science_id uuid;
   existing_metadata jsonb;
 begin
+  perform pg_advisory_xact_lock(724144, 1);
+  select id into science_id from public.laboratories
+    where lower(trim(name)) = 'science laboratory' for key share;
+  if science_id is null then
+    raise exception 'Science Laboratory is missing. Create it in InventoScan before running this script.';
+  end if;
+
   for account in select * from (values
-    ('Demo System Admin', 'demo.admin@inventoscan.test', 'InventoAdmin2026!', 'Admin'),
-    ('Demo Operator', 'demo.operator@inventoscan.test', 'InventoOperator2026!', 'Operator')
-  ) as accounts(full_name, email, password, app_role)
+    ('Demo System Admin', 'demo.admin@inventoscan.test', 'InventoAdmin2026!', 'Admin', null),
+    ('Demo Laboratory Admin', 'demo.labadmin@inventoscan.test', 'InventoLabAdmin2026!', 'Operator', 'Laboratory Admin'),
+    ('Demo Laboratory Operator', 'demo.operator@inventoscan.test', 'InventoOperator2026!', 'Operator', 'Laboratory Operator')
+  ) as accounts(full_name, email, password, app_role, laboratory_role)
   loop
     select id, raw_user_meta_data into account_id, existing_metadata
       from auth.users where lower(email) = account.email;
@@ -32,7 +41,8 @@ begin
     insert into public.user_accounts (full_name, email, role, status)
       values (account.full_name, account.email, account.app_role::public.user_role, 'active')
       on conflict (email) do update set full_name = excluded.full_name,
-        role = excluded.role, status = excluded.status;
+        role = excluded.role, status = excluded.status
+      returning id into profile_id;
 
     insert into auth.users (
       instance_id, id, aud, role, email, encrypted_password, email_confirmed_at,
@@ -61,9 +71,25 @@ begin
     ) on conflict (provider_id, provider) do update set
       identity_data = excluded.identity_data, updated_at = now();
 
+    -- Memberships reference the application profile, not the Auth user ID.
+    delete from public.laboratory_memberships
+      where user_id = profile_id and (account.laboratory_role is null or laboratory_id <> science_id);
+
+    if account.laboratory_role is not null then
+      insert into public.laboratory_memberships(user_id, laboratory_id, role)
+        values (profile_id, science_id, account.laboratory_role)
+        on conflict (user_id, laboratory_id) do update set role = excluded.role;
+    end if;
   end loop;
 end $demo$;
 commit;
 
-select full_name, email, role, status from public.user_accounts
-where email in ('demo.admin@inventoscan.test', 'demo.operator@inventoscan.test');
+select u.full_name, u.email,
+  case when u.role = 'Admin' then 'System Admin' else m.role end as demo_role,
+  case when u.role = 'Admin' then 'All laboratories' else l.name end as laboratory_access,
+  u.status
+from public.user_accounts u
+left join public.laboratory_memberships m on m.user_id = u.id
+left join public.laboratories l on l.id = m.laboratory_id
+where u.email in ('demo.admin@inventoscan.test', 'demo.labadmin@inventoscan.test', 'demo.operator@inventoscan.test')
+order by u.email;

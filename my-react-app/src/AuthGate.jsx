@@ -6,8 +6,9 @@ import './DemoLogin.css'
 import BrandLogo from './BrandLogo'
 
 const demoAccounts = [
-  { role: 'Operator', email: 'demo.operator@inventoscan.test', password: 'InventoOperator2026!' },
-  { role: 'System Admin', email: 'demo.admin@inventoscan.test', password: 'InventoAdmin2026!' },
+  { role: 'System Admin', access: 'All laboratories', email: 'demo.admin@inventoscan.test', password: 'InventoAdmin2026!' },
+  { role: 'Laboratory Admin', access: 'Science Laboratory', email: 'demo.labadmin@inventoscan.test', password: 'InventoLabAdmin2026!' },
+  { role: 'Laboratory Operator', access: 'Science Laboratory', email: 'demo.operator@inventoscan.test', password: 'InventoOperator2026!' },
 ]
 
 export default function AuthGate() {
@@ -107,8 +108,11 @@ export default function AuthGate() {
     </form>
     {!registering && <section className="demo-login" aria-label="Demo accounts">
       <h3>Try a demo account</h3><p>Choose a role to sign in automatically.</p>
-      <div className="demo-login-options">{demoAccounts.map(account => <button type="button" key={account.role} className="demo-login-button" disabled={signingIn || !supabase} onClick={() => { setEmail(account.email); setPassword(account.password); setShowPassword(false); signIn({ email: account.email, password: account.password }, true) }}>
-        <span className="demo-role">{account.role}</span><span className="demo-email">{account.email}</span><span className="demo-action">Open {account.role.toLowerCase()} demo →</span>
+      <div className="demo-login-options">{demoAccounts.map(account => <button type="button" key={account.email} className="demo-login-button" disabled={signingIn || !supabase} onClick={() => { setEmail(account.email); setPassword(account.password); setShowPassword(false); signIn({ email: account.email, password: account.password }, true) }}>
+        <span className="demo-role">{account.role}</span>
+        <span className="demo-access">{account.access}</span>
+        <span className="demo-email">{account.email}</span>
+        <span className="demo-action">Open {account.role.toLowerCase()} demo →</span>
       </button>)}</div>
     </section>}
   </div></div>

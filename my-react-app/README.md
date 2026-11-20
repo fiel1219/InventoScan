@@ -48,7 +48,7 @@ For a fresh database, run these scripts in Supabase SQL Editor in this order:
 
 Add your first administrator's email to `user_accounts` with role `Admin` and status `active`, then create their matching sign-in user in Supabase Auth. Creating the profile first avoids a redundant pending registration request. Active System Admins can access every laboratory without assignments. System Admins assign Laboratory Admins and Operators under **Users**; laboratory members must be assigned before they can access inventory. For existing databases, run `account_deletion.sql` and then `system_admin_laboratory_access.sql` after `security_hardening.sql` to enable the latest account management and laboratory permissions. The access upgrade changes permission functions without adding memberships or changing inventory/history.
 
-Optional sample inventory: run `supabase/seed.sql` immediately after `schema.sql`, before the feature migrations. Optional demo logins: run `supabase/demo_accounts.sql` after account setup.
+Optional sample inventory: run `supabase/seed.sql` immediately after `schema.sql`, before the feature migrations. Optional demo logins: run `supabase/demo_accounts.sql` after the database migrations.
 
 ### Existing database cleanup
 
@@ -100,12 +100,13 @@ Inventory data and setup queries load in parallel. Successful schema checks shar
 
 ### Demo accounts
 
-| System role | Email | Password |
-| --- | --- | --- |
-| Operator | demo.operator@inventoscan.test | InventoOperator2026! |
-| System Admin | demo.admin@inventoscan.test | InventoAdmin2026! |
+| Demo role | Laboratory access | Email | Password |
+| --- | --- | --- | --- |
+| System Admin | All laboratories | demo.admin@inventoscan.test | InventoAdmin2026! |
+| Laboratory Admin | Science Laboratory | demo.labadmin@inventoscan.test | InventoLabAdmin2026! |
+| Laboratory Operator | Science Laboratory | demo.operator@inventoscan.test | InventoOperator2026! |
 
-Run the entire `supabase/demo_accounts.sql` script in Supabase SQL Editor after account setup, then select **Open system admin demo** on the sign-in page. It creates a confirmed Auth login and an active System Admin profile, or refreshes the existing demo account with the same credentials. System Admins can manage users, laboratories, and inventory without a laboratory assignment. Assign a laboratory to the Operator demo before using its inventory. These are public demo credentials; use a demo database. The seed refuses to replace an unrelated Auth account with the same email.
+Run the entire [demo_accounts.sql](supabase/demo_accounts.sql) script in Supabase SQL Editor after the database migrations, then select a demo on the sign-in page. The script creates or refreshes three confirmed logins and makes Science Laboratory the only assignment for the two lab demos. The System Admin gets access to all laboratories through its system role. The existing Science Laboratory must be present. The SQL result lists each account's role and laboratory access. Use this script on a demo database because the credentials, including the System Admin's, are public.
 
 ## Verification
 
