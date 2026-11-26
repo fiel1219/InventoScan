@@ -61,6 +61,93 @@
   background-color: var(--theme-surface-muted);
 }
 
+.app select:not([multiple], [size]) {
+  min-width: 0;
+  max-width: 100%;
+  min-height: 36px;
+  border: 1px solid var(--theme-border, #cbd9cf);
+  border-radius: 8px;
+  padding: 8px 11px;
+  background-color: var(--theme-surface-muted, #f7faf6);
+  color: var(--theme-text, #20382a);
+  text-overflow: ellipsis;
+}
+
+.app select:not([multiple], [size]):hover:not(:disabled) {
+  border-color: var(--theme-accent, #087238);
+}
+
+.app select:not([multiple], [size]):focus-visible {
+  outline: 2px solid var(--brand-focus, #937000);
+  outline-offset: 2px;
+}
+
+.app select:not([multiple], [size]):disabled {
+  cursor: not-allowed;
+  opacity: .65;
+}
+
+/* Keep the native picker as a fallback for browsers without picker styling. */
+@supports (appearance: base-select) and selector(select::picker(select)) {
+  .app select:not([multiple], [size]),
+  .app select:not([multiple], [size])::picker(select) {
+    appearance: base-select;
+  }
+
+  .app select:not([multiple], [size]) {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .app select::picker-icon {
+    color: var(--theme-muted, #5b7062);
+  }
+
+  .app select:open::picker-icon {
+    transform: rotate(180deg);
+  }
+
+  .app select:not([multiple], [size])::picker(select) {
+    max-block-size: min(18rem, 50dvh);
+    max-inline-size: min(32rem, calc(100vw - 24px));
+    margin-block: 4px;
+    padding: 4px;
+    overflow: auto;
+    border: 1px solid var(--theme-border, #cbd9cf);
+    border-radius: 10px;
+    background: var(--theme-surface, #ffffff);
+    color: var(--theme-text, #20382a);
+    box-shadow: 0 6px 18px #13251b26;
+  }
+
+  .app select:not([multiple], [size]) option {
+    border-radius: 6px;
+    padding: 8px 11px;
+    line-height: 1.4;
+    white-space: normal;
+    overflow-wrap: anywhere;
+  }
+
+  .app select:not([multiple], [size]) option:checked {
+    background: var(--brand-soft-green, #e8f5ec);
+    font-weight: 600;
+  }
+
+  .app select:not([multiple], [size]) option:not(:disabled):is(:hover, :focus-visible) {
+    background: var(--theme-surface-accent, #fff5c2);
+  }
+
+  .app select:not([multiple], [size]) option::checkmark {
+    color: var(--theme-accent, #087238);
+  }
+
+  .app select:not([multiple], [size]) option:disabled {
+    color: var(--theme-muted, #5b7062);
+    opacity: .65;
+  }
+}
+
 .app[data-theme="dark"] :where(input, textarea)::placeholder {
   color: #a5a5b0;
   opacity: 1;
