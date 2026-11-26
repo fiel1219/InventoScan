@@ -4,6 +4,8 @@ import { readFile } from 'node:fs/promises'
 import { PGlite } from '@electric-sql/pglite'
 import { registerAccount } from '../src/lib/registration.js'
 
+const appOrigin = 'https://inventoscan.example.test'
+
 test('signup waits for atomic registration and sends normalized identity metadata', async () => {
   const calls = []
   const client = {
@@ -14,14 +16,19 @@ test('signup waits for atomic registration and sends normalized identity metadat
     },
   }
   const input = { fullName: ' Test User ', email: ' Test@Example.test ', password: 'example-password' }
-  await registerAccount(client, input)
+  await registerAccount(client, input, appOrigin)
   assert.deepEqual(calls, ['inventory_registration_ready', {
-    email: 'test@example.test', password: input.password, options: { data: { full_name: 'Test User' } },
+    email: 'test@example.test',
+    password: input.password,
+    options: {
+      data: { full_name: 'Test User' },
+      emailRedirectTo: 'https://inventoscan.example.test/?confirm-email=1',
+    },
   }, 'signOut'])
   for (const setupResult of [{ data: false }, { error: { code: 'PGRST202' } }, { error: new Error('Network unavailable') }]) {
     client.rpc = async () => setupResult
     client.auth.signUp = () => assert.fail('An unready backend must not create an Auth user')
-    await assert.rejects(registerAccount(client, input), /system update|Network unavailable/)
+    await assert.rejects(registerAccount(client, input, appOrigin), /system update|Network unavailable/)
   }
 })
 
@@ -36,9 +43,9 @@ test('signup failures remain retryable and confirmation-required signup needs no
     from: () => assert.fail('Registration must not separately write an approval request'),
   }
   const input = { fullName: 'Test User', email: 'test@example.test', password: 'example-password' }
-  await assert.rejects(registerAccount(client, input), /Database error/)
+  await assert.rejects(registerAccount(client, input, appOrigin), /Database error/)
   fail = false
-  await registerAccount(client, input)
+  await registerAccount(client, input, appOrigin)
   assert.equal(attempts, 2)
 })
 

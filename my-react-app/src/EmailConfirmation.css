@@ -1,0 +1,51 @@
+.email-confirmation {
+  width: 450px;
+}
+
+.email-confirmation h1 {
+  color: var(--brand-heading);
+}
+
+.email-confirmation p {
+  line-height: 1.6;
+}
+
+.confirmation-button {
+  display: block;
+  width: 100%;
+  padding: 11px 16px;
+  border: 0;
+  border-radius: 7px;
+  background: var(--brand-primary);
+  color: var(--brand-primary-text);
+  text-align: center;
+  text-decoration: none;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.confirmation-button:hover:not(:disabled) {
+  background: var(--brand-primary-hover);
+}
+
+.confirmation-button:disabled {
+  opacity: .65;
+}
+
+.confirmation-back {
+  display: block;
+  margin-top: 16px;
+  color: var(--brand-link);
+  text-align: center;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.email-confirmation :is(a, button, input):focus-visible {
+  outline: 2px solid var(--brand-focus);
+  outline-offset: 3px;
+}
+
+.confirmation-resend .confirmation-notice {
+  margin: 12px 0 0;
+}

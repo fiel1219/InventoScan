@@ -39,22 +39,56 @@
   white-space: nowrap;
 }
 
-.theme-toggle:hover { background: var(--theme-surface-accent, #fff5c2); }
-.theme-toggle:focus-visible { outline: 2px solid var(--theme-accent, #087238); outline-offset: 3px; }
-.theme-toggle svg { flex-shrink: 0; }
+.theme-toggle:hover {
+  background: var(--theme-surface-accent, #fff5c2);
+}
+
+.theme-toggle:focus-visible {
+  outline: 2px solid var(--theme-accent, #087238);
+  outline-offset: 3px;
+}
+
+.theme-toggle svg {
+  flex-shrink: 0;
+}
 
 /* Form fields and native select menus follow the selected theme. */
-.app :where(input, select, textarea) { color: var(--theme-text, #22263a); }
-.app[data-theme="dark"] :where(input, select, textarea) { background-color: var(--theme-surface-muted); }
-.app[data-theme="dark"] :where(input, textarea)::placeholder { color: #a5a5b0; opacity: 1; }
-.app[data-theme="dark"] .connection-error { background: var(--theme-danger-bg); color: var(--theme-danger-text); }
-.app[data-theme="dark"] .empty { color: var(--theme-muted); }
+.app :where(input, select, textarea) {
+  color: var(--theme-text, #22263a);
+}
+
+.app[data-theme="dark"] :where(input, select, textarea) {
+  background-color: var(--theme-surface-muted);
+}
+
+.app[data-theme="dark"] :where(input, textarea)::placeholder {
+  color: #a5a5b0;
+  opacity: 1;
+}
+
+.app[data-theme="dark"] .connection-error {
+  background: var(--theme-danger-bg);
+  color: var(--theme-danger-text);
+}
+
+.app[data-theme="dark"] .empty {
+  color: var(--theme-muted);
+}
 
 @media (max-width: 1200px) {
-  .theme-toggle { right: 24px; }
+  .theme-toggle {
+    right: 24px;
+  }
 }
 
 @media (max-width: 700px) {
-  .theme-toggle { right: 16px; width: 36px; padding: 8px; }
-  .theme-toggle span { display: none; }
+  .theme-toggle {
+    right: 16px;
+    width: 36px;
+    padding: 8px;
+  }
+
+  .theme-toggle span {
+    display: none;
+  }
 }

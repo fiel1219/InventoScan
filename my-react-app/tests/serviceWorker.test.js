@@ -27,4 +27,5 @@ test('cache write failures preserve successful network responses and cleanup res
   assert.equal(await response.text(),'network script')
   await instance.activate();assert.deepEqual(instance.deleted,['inventoscan-shell-v2','inventoscan-shell-v3'])
   assert.equal(instance.fetch({method:'GET',url:'https://database.test/rest/v1/shelves'}),undefined)
+  assert.equal(instance.fetch({method:'GET',url:'https://app.test/?confirm-email=1',mode:'navigate'}),undefined)
 })

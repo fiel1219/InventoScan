@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import App from './App'
 import { supabase } from './lib/supabase'
 import { registerAccount } from './lib/registration'
+import { emailConfirmationPath } from './lib/emailConfirmation'
 import './DemoLogin.css'
 import BrandLogo from './BrandLogo'
 
@@ -79,7 +80,7 @@ export default function AuthGate() {
     registrationInProgress.current = true
     authVersion.current++
     try {
-      await registerAccount(supabase, { fullName, email, password })
+      await registerAccount(supabase, { fullName, email, password }, window.location.origin)
       setRegistering(false); setPassword(''); setShowPassword(false); setError('Registration submitted. Check your email if confirmation is required. An administrator must approve your account before you can sign in.')
     } catch (failure) { setError(failure.message) } finally { registrationInProgress.current = false; setSigningIn(false) }
   }
@@ -105,6 +106,7 @@ export default function AuthGate() {
         <button className="primary login-button" disabled={!supabase}>{signingIn ? 'Please wait…' : registering ? 'Request operator access' : 'Sign in to VSU InventoScan'}</button>
         <button type="button" className="auth-switch" onClick={() => { setRegistering(!registering); setShowPassword(false); setError('') }}>{registering ? 'Back to sign in' : 'Create an account'}</button>
       </fieldset>
+      {!registering && <a className="resend-confirmation-link" href={emailConfirmationPath}>Resend confirmation email</a>}
     </form>
     {!registering && <section className="demo-login" aria-label="Demo accounts">
       <h3>Try a demo account</h3><p>Choose a role to sign in automatically.</p>

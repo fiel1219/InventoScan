@@ -64,6 +64,12 @@ The migration also restores missing requests for existing email-based Auth accou
 
 Unfinished inventory checks ask for confirmation before switching pages, laboratories, shelves, or logging out. Cancel keeps all entered findings and notes. Refreshing or closing the page uses the browser's unsaved-changes warning. In-app navigation is blocked while a check is saving. These warnings do not persist a draft after the user confirms leaving.
 
+### Email confirmation page
+
+In **Supabase → Authentication → URL Configuration**, set **Site URL** to the deployed InventoScan address, then add that address with `/?confirm-email=1` to **Redirect URLs**. For example, if the site is `https://your-inventoscan.vercel.app`, add `https://your-inventoscan.vercel.app/?confirm-email=1`. Keep **Confirm email** enabled and use `{{ .ConfirmationURL }}` in the **Confirm signup** email template. New signups and resend requests use the origin where the app is opened. [Supabase redirect setup](https://supabase.com/docs/guides/auth/redirect-urls)
+
+The page shows whether the email was verified and explains that administrator approval is still required. If a link has expired or cannot be opened, users can choose **Resend confirmation email** on the sign-in screen. Emails already sent with a localhost address keep that address. If an old link was already used, the email may already be verified. Sign in directly once the account is approved.
+
 ## Current tables
 
 | Tables | Purpose |

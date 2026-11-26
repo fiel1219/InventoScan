@@ -12,7 +12,8 @@ self.addEventListener('activate', event => {
 })
 
 self.addEventListener('fetch', event => {
-  if (event.request.method !== 'GET' || new URL(event.request.url).origin !== self.location.origin) return
+  const url = new URL(event.request.url)
+  if (event.request.method !== 'GET' || url.origin !== self.location.origin || url.searchParams.has('confirm-email')) return
   event.respondWith((async () => {
     const cache = await caches.open(CACHE_NAME)
     try {
